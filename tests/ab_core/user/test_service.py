@@ -1,7 +1,7 @@
 import pytest
 
-from obo_core.user.model import User
-from obo_core.user.service import UserService
+from ab_core.user.model import User
+from ab_core.user.service import UserService
 
 
 @pytest.mark.asyncio
