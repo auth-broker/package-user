@@ -62,7 +62,6 @@ class UserService(BaseModel):
             user.email = email or user.email
             user.display_name = display_name or user.display_name
             user.preferred_username = preferred_username or user.preferred_username
-            db_session.add(user)
             return user
 
         user = User(
