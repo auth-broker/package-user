@@ -1,3 +1,4 @@
+from uuid import UUID
 from datetime import datetime, timezone
 from typing import Optional
 
@@ -27,7 +28,7 @@ class UserService(BaseModel):
     async def get_user_by_id(
         self,
         *,
-        user_id: int,
+        user_id: UUID,
         db_session: AsyncSession,
     ) -> Optional[User]:
         return await db_session.get(User, user_id)
