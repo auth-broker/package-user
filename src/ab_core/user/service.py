@@ -1,3 +1,4 @@
+from uuid import UUID
 from datetime import datetime, timezone
 from typing import Optional
 
@@ -27,7 +28,7 @@ class UserService(BaseModel):
     async def get_user_by_id(
         self,
         *,
-        user_id: int,
+        user_id: UUID,
         db_session: AsyncSession,
     ) -> Optional[User]:
         return await db_session.get(User, user_id)
@@ -41,7 +42,7 @@ class UserService(BaseModel):
         user.last_seen = datetime.now(timezone.utc)
         db_session.add(user)
 
-    async def me(
+    async def upsert_user_by_oidc(
         self,
         *,
         oidc_sub: str,
@@ -61,6 +62,7 @@ class UserService(BaseModel):
             user.email = email or user.email
             user.display_name = display_name or user.display_name
             user.preferred_username = preferred_username or user.preferred_username
+            db_session.add(user)
             return user
 
         user = User(
