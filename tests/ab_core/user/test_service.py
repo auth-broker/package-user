@@ -10,7 +10,7 @@ async def test_user_service(tmp_database_async_session):
     session = tmp_database_async_session
 
     # ── create ────────────────────────────────────────────────
-    user = await service.me(
+    user = await service.upsert_user_by_oidc(
         oidc_sub="abc123",
         oidc_iss="https://issuer.example.com",
         email="test@example.com",
@@ -33,7 +33,7 @@ async def test_user_service(tmp_database_async_session):
     updated_at = user.updated_at
 
     # ── update ────────────────────────────────────────────────
-    updated_user = await service.me(
+    updated_user = await service.upsert_user_by_oidc(
         oidc_sub="abc123",
         oidc_iss="https://issuer.example.com",
         email="new@example.com",
