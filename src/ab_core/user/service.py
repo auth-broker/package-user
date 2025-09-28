@@ -1,6 +1,7 @@
+"""Service for managing users."""
+
+from datetime import UTC, datetime
 from uuid import UUID
-from datetime import datetime, timezone
-from typing import Optional
 
 from pydantic import BaseModel
 from sqlalchemy import select
@@ -10,13 +11,16 @@ from .model import User
 
 
 class UserService(BaseModel):
+    """Service for managing users."""
+
     async def get_user_by_oidc(
         self,
         *,
         oidc_sub: str,
         oidc_iss: str,
         db_session: AsyncSession,
-    ) -> Optional[User]:
+    ) -> User | None:
+        """Fetch a user by their OIDC subject and issuer."""
         result = await db_session.execute(
             select(User).where(
                 User.oidc_sub == oidc_sub,
@@ -30,7 +34,8 @@ class UserService(BaseModel):
         *,
         user_id: UUID,
         db_session: AsyncSession,
-    ) -> Optional[User]:
+    ) -> User | None:
+        """Fetch a user by their ID."""
         return await db_session.get(User, user_id)
 
     async def seen_user(
@@ -39,19 +44,22 @@ class UserService(BaseModel):
         user: User,
         db_session: AsyncSession,
     ) -> None:
-        user.last_seen = datetime.now(timezone.utc)
+        """Update the user's last seen timestamp."""
+        user.last_seen = datetime.now(UTC)
         db_session.add(user)
+        await db_session.flush()
 
     async def upsert_user_by_oidc(
         self,
         *,
         oidc_sub: str,
         oidc_iss: str,
-        email: Optional[str] = None,
-        display_name: Optional[str] = None,
-        preferred_username: Optional[str] = None,
+        email: str | None = None,
+        display_name: str | None = None,
+        preferred_username: str | None = None,
         db_session: AsyncSession,
     ) -> User:
+        """Insert or update a user based on OIDC subject and issuer."""
         user = await self.get_user_by_oidc(
             oidc_sub=oidc_sub,
             oidc_iss=oidc_iss,
@@ -59,17 +67,21 @@ class UserService(BaseModel):
         )
 
         if user:
-            user.email = email or user.email
-            user.display_name = display_name or user.display_name
-            user.preferred_username = preferred_username or user.preferred_username
-            return user
+            if email is not None:
+                user.email = email
+            if display_name is not None:
+                user.display_name = display_name
+            if preferred_username is not None:
+                user.preferred_username = preferred_username
+        else:
+            user = User(
+                oidc_sub=oidc_sub,
+                oidc_iss=oidc_iss,
+                email=email,
+                display_name=display_name,
+                preferred_username=preferred_username,
+            )
+            db_session.add(user)
 
-        user = User(
-            oidc_sub=oidc_sub,
-            oidc_iss=oidc_iss,
-            email=email,
-            display_name=display_name,
-            preferred_username=preferred_username,
-        )
-        db_session.add(user)
+        await db_session.flush()
         return user

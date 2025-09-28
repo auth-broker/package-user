@@ -1,3 +1,5 @@
+"""Tests for UserService."""
+
 import pytest
 
 from ab_core.user.model import User
@@ -6,6 +8,7 @@ from ab_core.user.service import UserService
 
 @pytest.mark.asyncio
 async def test_user_service(tmp_database_async_session):
+    """Test UserService methods."""
     service = UserService()
     session = tmp_database_async_session
 
@@ -18,7 +21,7 @@ async def test_user_service(tmp_database_async_session):
         preferred_username="tester",
         db_session=session,
     )
-    await session.commit()
+    # await session.commit()
     await session.refresh(user)
 
     assert isinstance(user, User)
@@ -40,7 +43,7 @@ async def test_user_service(tmp_database_async_session):
         display_name="Updated Tester",
         db_session=session,
     )
-    await session.commit()
+    # await session.commit()
     await session.refresh(updated_user)
 
     assert updated_user.id == user.id
@@ -67,7 +70,7 @@ async def test_user_service(tmp_database_async_session):
     # ── seen_user updates last_seen ───────────────────────────
     last_seen_before = by_id.last_seen
     await service.seen_user(user=by_id, db_session=session)
-    await session.commit()
+    # await session.commit()
     await session.refresh(by_id)
 
     assert by_id.last_seen >= last_seen_before
