@@ -9,17 +9,19 @@ install:
 
 .PHONY: format ## Run the formatter on bare metal
 format:
-	uv run tox -e format
+	uv run ruff format
+	uv run ruff check --fix
 
 
 .PHONY: lint ## run the linter on bare metal
 lint:
-	uv run tox -e lint
+	uv run ruff check
+	uv run ruff format --check
 
 
 .PHONY: test ## run unit tests on bare metal
 test:
-	uv run tox -e test
+	uv run pytest -vv
 
 
 .PHONY: publish ## Build & publish the package to Nexus. Ensure to have UV_PUBLISH_USERNAME & UV_PUBLISH_PASSWORD environment variables set.

@@ -15,7 +15,6 @@ async def test_user_service(tmp_database_async_session):
     # ── create ────────────────────────────────────────────────
     user = await service.upsert_user_by_oidc(
         oidc_sub="abc123",
-        oidc_iss="https://issuer.example.com",
         email="test@example.com",
         display_name="Tester",
         preferred_username="tester",
@@ -25,7 +24,7 @@ async def test_user_service(tmp_database_async_session):
     await session.refresh(user)
 
     assert isinstance(user, User)
-    assert (user.oidc_sub, user.oidc_iss) == ("abc123", "https://issuer.example.com")
+    assert user.oidc_sub == "abc123"
     assert (user.email, user.display_name, user.preferred_username) == (
         "test@example.com",
         "Tester",
@@ -38,7 +37,6 @@ async def test_user_service(tmp_database_async_session):
     # ── update ────────────────────────────────────────────────
     updated_user = await service.upsert_user_by_oidc(
         oidc_sub="abc123",
-        oidc_iss="https://issuer.example.com",
         email="new@example.com",
         display_name="Updated Tester",
         db_session=session,
@@ -55,7 +53,6 @@ async def test_user_service(tmp_database_async_session):
     # ── fetch by OIDC ─────────────────────────────────────────
     fetched = await service.get_user_by_oidc(
         oidc_sub="abc123",
-        oidc_iss="https://issuer.example.com",
         db_session=session,
     )
     assert fetched and fetched.id == user.id

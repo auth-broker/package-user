@@ -42,7 +42,7 @@ jobs:
         run: uv sync --extra all
 
       - name: Lint
-        run: uv run tox -e lint
+        run: uv run ruff check && uv run ruff format --check
 
   test:
     if: ${{ github.actor != 'dependabot[bot]' }}
@@ -71,4 +71,4 @@ jobs:
         run: uv sync --extra all
 
       - name: Test
-        run: uv run tox -e test
+        run: uv run pytest -vv

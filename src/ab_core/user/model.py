@@ -15,10 +15,9 @@ class User(IDMixin, CreatedAtMixin, UpdatedAtMixin, ActiveMixin, SQLModel, table
     """User model."""
 
     __tablename__ = "users"
-    __table_args__ = (UniqueConstraint("oidc_iss", "oidc_sub", name="uq_users_oidc"),)
+    __table_args__ = (UniqueConstraint("oidc_sub", name="uq_users_oidc_sub"),)
 
-    oidc_sub: str = Field(index=True, nullable=False)
-    oidc_iss: str = Field(nullable=False)
+    oidc_sub: str = Field(index=True, nullable=False, unique=True)
 
     email: str | None = Field(default=None, index=True)
     display_name: str | None = Field(default=None)

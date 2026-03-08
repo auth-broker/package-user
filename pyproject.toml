@@ -11,8 +11,7 @@ dev = [
   "pytest-asyncio>=1.0.0,<2",
   "pytest-cov>=6.2.1,<7",
   "pytest>=8.4.1,<9",
-  "ruff>=0.12.3,<0.13",
-  "tox>=4.27.0,<5"
+  "ruff>=0.12.3,<0.13"
 ]
 
 [project]
@@ -25,7 +24,7 @@ description = ""
 name = "ab-user"
 readme = "README.md"
 requires-python = ">=3.12, <4"
-version = "0.1.9"
+version = "0.2.0"
 
 [tool.hatch.build.targets.sdist]
 include = ["src/ab_core"]

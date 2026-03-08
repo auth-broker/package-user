@@ -17,14 +17,12 @@ class UserService(BaseModel):
         self,
         *,
         oidc_sub: str,
-        oidc_iss: str,
         db_session: AsyncSession,
     ) -> User | None:
         """Fetch a user by their OIDC subject and issuer."""
         result = await db_session.execute(
             select(User).where(
                 User.oidc_sub == oidc_sub,
-                User.oidc_iss == oidc_iss,
             )
         )
         return result.scalar_one_or_none()
@@ -53,7 +51,6 @@ class UserService(BaseModel):
         self,
         *,
         oidc_sub: str,
-        oidc_iss: str,
         email: str | None = None,
         display_name: str | None = None,
         preferred_username: str | None = None,
@@ -62,7 +59,6 @@ class UserService(BaseModel):
         """Insert or update a user based on OIDC subject and issuer."""
         user = await self.get_user_by_oidc(
             oidc_sub=oidc_sub,
-            oidc_iss=oidc_iss,
             db_session=db_session,
         )
 
@@ -76,7 +72,6 @@ class UserService(BaseModel):
         else:
             user = User(
                 oidc_sub=oidc_sub,
-                oidc_iss=oidc_iss,
                 email=email,
                 display_name=display_name,
                 preferred_username=preferred_username,
